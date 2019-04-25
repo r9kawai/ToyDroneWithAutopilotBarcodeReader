@@ -3,3 +3,4 @@ Task of barcode read automatically at flight. Anyone can experiment it with toy 
 
 Under construction.
 
+![ToyDroneWithAutopilotBarcodeReader](https://user-images.githubusercontent.com/47957215/56711036-fe74c700-6763-11e9-8248-f39a01e9ff78.png)
