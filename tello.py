@@ -1,3 +1,6 @@
+# This source code from https://github.com/dji-sdk/Tello-Python, then amended.
+# Thank you for the open source community.
+
 from struct import Struct
 import socket
 import threading

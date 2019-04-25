@@ -1,3 +1,5 @@
+# This source code is only ring a beep sound.
+
 import threading
 import subprocess
 

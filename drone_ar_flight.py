@@ -1,3 +1,14 @@
+# This source code is recognition are positions from camera image,
+# self position, markers position, and read barcode.
+# (These are indicate a distance of cm, and a degree of view direction, and a diffrential cm,
+# of cource, Those estimates is not accurate! but, Aircraft is repeatedly estimate,
+# and move, amend, so Usually works well.)
+# Swich a action mode from some modes and submodes, depend on detect marker information.
+# If aircraft position is close a marker, It try read a barcode.
+# Successfuly, ring a beep sound, then turn 90degree x 2, Alternate to next marker.
+# Repeate above.(If it goes well)
+# These algorithms have margin for improvement.
+
 import os
 import time
 import datetime
@@ -33,17 +44,13 @@ FRAME_H = 720
 
 DETECT_CYCLE_TIME_MS = 200
 
-PARAM_A_1 = (float)(68.5)
-PARAM_A_2 = (float)(1.95)
-PARAM_A_3 = (int)(15)
+PARAM_A_1 = (float)(185)
+PARAM_A_2 = (float)(5.1)
+PARAM_A_3 = (int)(160)
 
-PARAM_B_1 = (float)(185)
-PARAM_B_2 = (float)(5.1)
-PARAM_B_3 = (int)(160)
-
-PARAM_1 = PARAM_B_1
-PARAM_2 = PARAM_B_2
-PARAM_3 = PARAM_B_3
+PARAM_1 = PARAM_A_1
+PARAM_2 = PARAM_A_2
+PARAM_3 = PARAM_A_3
 
 DETECT_CYCLE_TIME_MS = 200
 
@@ -252,9 +259,6 @@ class Drone_AR_Flight:
                 deg1 = self._get_2point_degree(x0,y0, x1,y1)
                 deg2 = self._get_2point_degree(x3,y3, x2,y2)
                 deg = deg1 + deg2
-#               if cy < (FRAME_H/2):
-#                   deg *= -1
-#               print(x0, y0, ':', x1, y1, ':', x2, y2, ':', x3, y3, '|', deg1, deg2, deg) 
                 self.marker_ztilt[id] = deg
 
         # renew record a detect time of the marker

@@ -1,3 +1,5 @@
+# This source code is only create instance, start.
+
 import tello
 from drone_control_ui import DroneUI
 

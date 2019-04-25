@@ -1,3 +1,5 @@
+# This source code is create UI with Tkinter, glue a some components.
+
 import sys
 import numpy as np
 from PIL import Image
@@ -19,7 +21,7 @@ class DroneUI:
         self.ar_val = 0
 
         self.auto_pilot = False
-        self.takeoff = False # -------------------------------------------- CAUTION! DEBUGGING!
+        self.takeoff = False
         self.distance = 20
         self.degree = 10
         self.FRAME_W = 960
