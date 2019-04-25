@@ -46,7 +46,7 @@ DETECT_CYCLE_TIME_MS = 200
 
 PARAM_A_1 = (float)(185)
 PARAM_A_2 = (float)(5.1)
-PARAM_A_3 = (int)(160)
+PARAM_A_3 = (int)(130)
 
 PARAM_1 = PARAM_A_1
 PARAM_2 = PARAM_A_2
