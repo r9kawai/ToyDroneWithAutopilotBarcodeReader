@@ -7,12 +7,15 @@ from PIL import ImageTk
 import Tkinter as tki
 from Tkinter import Toplevel, Scale
 import threading
+import pytz
 import datetime
 import cv2
 import os
 import time
 from drone_ar_flight import Drone_AR_Flight
 import platform
+
+TIMEZONE = 'Asia/Tokyo'
 
 class DroneUI:
     def __init__(self,drone,outputpath):
@@ -68,6 +71,7 @@ class DroneUI:
         self.barcode_indicate = tki.Label(textvariable=self.barcode_str, width=15, anchor=tki.W, justify='left',
                                           foreground='#000000', background='#ffffff', font=("",16))
         self.barcode_indicate.pack(fill="both", anchor=tki.W)
+        self.barcode_latest_str = ''
 
         self.btn_landing = tki.Button(
             self.root, text="Land", relief="raised", command=self.droneLanding)
@@ -96,9 +100,11 @@ class DroneUI:
         self.tmp_f.pack(side="bottom")
         self.tmp_f.focus_set()
 
+        self.hist_txt = tki.Text(self.root, height=16, width=40)
+        self.hist_txt.pack(side='bottom', fill='both', expand='yes', padx=10, pady=5)
+
         self.root.wm_title("Drone UI")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
-
 
         self.video_thread_stop = threading.Event()
         self.video_thread = threading.Thread(target=self._video_loop, args=())
@@ -114,6 +120,8 @@ class DroneUI:
         self.sending_command_thread = threading.Thread(target = self._sendingCommand)
         self.sending_command_thread.daemon = True
         self.sending_command_thread.start()
+
+        self._add_log('apli boot')
 
     def _video_loop(self):
         time.sleep(0.5)
@@ -189,7 +197,10 @@ class DroneUI:
                     print('>> stay')
                
             tmpstr = self.drone_ar.get_latest_barcode()
-            self.barcode_str.set(tmpstr)
+            if self.barcode_latest_str != tmpstr:
+                self.barcode_latest_str = tmpstr
+                self.barcode_str.set(tmpstr)
+                self._add_log(tmpstr)
 
             if (poling_counter != 0) and (poling_counter % 30) == 0:
                 if toggle == 1:
@@ -359,6 +370,12 @@ class DroneUI:
         self.drone.close()
         del self.drone
         self.root.quit()
+
+    def _add_log(self, arg_log):
+        now = datetime.datetime.now(pytz.timezone(TIMEZONE))
+        nowtimestr = str(now.strftime('%X'))
+        logstr = nowtimestr + ' : [' + arg_log + ']\n'
+        self.hist_txt.insert(tki.END, logstr)
 
 #eof
 

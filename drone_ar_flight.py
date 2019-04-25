@@ -84,7 +84,7 @@ class Drone_AR_Flight:
 
         self._marker_reset()
 
-        self.code_latest = 'non'
+        self.code_latest = ''
         self.code_latest_rect = (0,0,0,0)
         self.code_latest_view = 0
 
