@@ -203,9 +203,9 @@ class DroneUI:
                 self._add_log(tmpstr)
 
             if (poling_counter != 0) and (poling_counter % 30) == 0:
-                if toggle == 1:
+                if toggle == 2:
                     self.drone.req_iframe()
-                elif toggle == 2:
+                elif toggle == 1:
                     self.get_height()
                 elif toggle == 3:
                     self.get_battery()
