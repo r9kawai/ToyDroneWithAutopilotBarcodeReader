@@ -4,6 +4,7 @@ Task of barcode read automatically at flight. Anyone can experiment it with toy 
 It use image processing of AR marker, camera process recognize position. Please replay below movie!
 
 ## The Movie is Under construction...
+[![](https://img.youtube.com/vi/cq8WWsSY9-k/0.jpg)](https://www.youtube.com/watch?v=cq8WWsSY9-k)
 
 <img width="670" alt="github_ToyDroneWithAutopilotBarcodeReader" src="https://user-images.githubusercontent.com/47957215/56717350-697bc900-6777-11e9-8662-0a040f9596e9.png">
 
