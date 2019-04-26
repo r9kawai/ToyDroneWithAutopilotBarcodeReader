@@ -40,10 +40,8 @@ Stick it on the wall, please devise.
 https://github.com/r9kawai/ToyDroneWithAutopilotBarcodeReader.git
 - Turn on drone, wait about 10sec,
 - Connect wifi to drone as access point name of "TELLO_XXXX" from Ubuntu PC.
-- Try below ping command.
-ping 192.168.10.1
-- If you take responce from drone, try run python code.
-python main.py
+- Try below ping command. > ping 192.168.10.1
+- If you take responce from drone, try run python code. > python main.py
 - Boot application screen is like a above movie, it success.
 
 ## After take off.
