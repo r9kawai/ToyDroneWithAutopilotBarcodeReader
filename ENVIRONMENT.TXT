@@ -1,0 +1,53 @@
+- It is not cmd script. You should throw an each cmd.
+- If you are enthousiasmos, no need below...
+
+- Install clean Ubuntu18.10 from iso.
+
+sudo apt update
+sudo apt upgrade
+sudo apt install net-tools
+
+- You need try connect wifi to Tello and throw ping as this point.
+ > ping 192.168.10.
+
+- If you haven't wifi driver, you need install it.
+
+sudo apt install build-essential -y
+sudo apt install python2.7 python-pip -y
+sudo pip install cmake
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 150
+sudo apt install aptitude -y
+sudo aptitude install libboost-all-dev
+sudo apt install python-dev python-numpy -y
+sudo apt install libavcodec-dev -y
+sudo apt install libswscale-dev -y
+sudo apt install python-matplotlib -y
+sudo pip install opencv-python
+sudo apt install python-imaging-tk -y
+sudo pip install opencv-contrib-python
+sudo python -m pip install pyzbar
+
+sudo apt install libzbar-dev
+sudo aptitude install libzbar-dev
+- above command select 2nd suggestion.(as my case
+
+sudo python -m pip install pyaudio
+
+git clone https://github.com/r9kawai/ToyDroneWithAutopilotBarcodeReader.git
+
+ > python main.py
+
+- Success?
+- If good case, no need below build.
+
+git clone https://github.com/dji-sdk/Tello-Python.git
+
+cd Tello-Python/Tello_Video/h264decoder/
+mkdir build
+cd build
+cmake ..
+make
+
+- copy .so to ToyDroneWithAutopilotBarcodeReader/
+
+- eof
