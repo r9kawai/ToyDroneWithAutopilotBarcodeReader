@@ -13,10 +13,9 @@ CMD_REQ_IFRAME =(0xcc, 0x58, 0x00, 0x7c, 0x60, 0x25, 0x00, 0x00, 0x00, 0x6c, 0x9
 class Tello:
     def __init__(self, local_ip, local_port, imperial=False, command_timeout=.3, tello_ip='192.168.10.1',
                  tello_port=8889):
-        self.abort_flag = False
         self.decoder = libh264decoder.H264Decoder()
         self.command_timeout = command_timeout
-        self.response = None  
+        self.response = None
         self.frame = None  # numpy array BGR -- current camera output frame
         self.is_freeze = False  # freeze current camera output
         self.last_frame = None
@@ -26,6 +25,7 @@ class Tello:
         self.local_video_port = 11111  # port for receiving video stream
         self.last_height = 0
         self.last_battery = 0
+        self.now_inquiry = 'non'
         self.socket.bind((local_ip, local_port))
 
         # thread for receiving cmd ack
@@ -71,7 +71,7 @@ class Tello:
         self.receive_video_thread_run = False
         self.receive_video_thread.join()
     
-    def read(self):
+    def read_video_frame(self):
         if self.is_freeze:
             return self.last_frame
         else:
@@ -85,10 +85,27 @@ class Tello:
     def _receive_thread(self):
         while self.receive_thread_run == True:
             try:
-                self.response, ip = self.socket.recvfrom(3000)
-                #print(self.response)
+                buff, ip = self.socket.recvfrom(3000)
+                if buff != None:
+                    self.response = self.buff.decode('utf-8')
+                    print('< res ', self.response)
+                    try:
+                        val = int(self.response)
+                    except ValueError:
+                        val = -1:
+                    
+                    if val > 0:
+                        if self.now_inquiry == 'height':
+                            print('<  res height ', val)
+                            self.last_height = val
+                        elif self.now_inquiry == 'battery':
+                            print('<  res battery ', val)
+                            self.last_battery = val
+                        
             except socket.error as exc:
                 print ("Caught exception socket.error : %s" % exc)
+
+        return
 
     def _receive_video_thread(self):
         packet_data = ""
@@ -112,7 +129,6 @@ class Tello:
             (frame, w, h, ls) = framedata
             if frame is not None:
                 # print 'frame size %i bytes, w %i, h %i, linesize %i' % (len(frame), w, h, ls)
-
                 frame = np.fromstring(frame, dtype=np.ubyte, count=len(frame), sep='')
                 frame = (frame.reshape((h, ls / 3, 3)))
                 frame = frame[:, :w, :]
@@ -121,8 +137,6 @@ class Tello:
         return res_frame_list
 
     def send_command(self, command):
-        self.abort_flag = False
-        timer = threading.Timer(self.command_timeout, self.set_abort_flag)
         if command == 'iframe':
             s11 = Struct("!11B")
             reqifcmd = s11.pack(*CMD_REQ_IFRAME)
@@ -131,116 +145,69 @@ class Tello:
         else:
             print (">> send cmd: {}".format(command))
             self.socket.sendto(command.encode('utf-8'), self.tello_address)
-
-        timer.start()
-        while self.response is None:
-            if self.abort_flag is True:
-                break
-        timer.cancel()
-        
-        if self.response is None:
-            response = 'none_response'
-        else:
-            response = self.response.decode('utf-8')
-
-        self.response = None
-
-        return response
+        return
     
-    def set_abort_flag(self):
-        self.abort_flag = True
-
     def takeoff(self):
-        return self.send_command('takeoff')
+        self.send_command('takeoff')
+        return
 
     def set_speed(self, speed):
-        return self.send_command('speed %s' % speed)
+        self.send_command('speed %s' % speed)
+        return
 
     def rotate_cw(self, degrees):
-        return self.send_command('cw %s' % degrees)
+        self.send_command('cw %s' % degrees)
+        return
 
     def rotate_ccw(self, degrees):
-        return self.send_command('ccw %s' % degrees)
-
-    def flip(self, direction):
-        return self.send_command('flip %s' % direction)
-
-    def get_response(self):
-        response = self.response
-        return response
+        self.send_command('ccw %s' % degrees)
+        return
 
     def get_height(self):
-        height = self.send_command('height?')
-        height = str(height)
-        height = filter(str.isdigit, height)
-        try:
-            height = int(height)
-            self.last_height = height
-        except:
-            height = self.last_height
-            pass
-
-        return height
+        self.now_inquiry = 'height'
+        self.send_command('height?')
+        return self.last_height
 
     def get_battery(self):
-        battery = self.send_command('battery?')
-
-        try:
-            battery = int(battery)
-            self.last_battery = battery
-        except:
-            battery = self.last_battery
-            pass
-
-        return battery
-
-    def get_flight_time(self):
-        flight_time = self.send_command('time?')
-
-        try:
-            flight_time = int(flight_time)
-        except:
-            pass
-
-        return flight_time
-
-    def get_speed(self):
-        speed = self.send_command('speed?')
-
-        try:
-            speed = float(speed)
-            speed = round((speed / 27.7778), 1)
-        except:
-            pass
-
-        return speed
+        self.now_inquiry = 'battery'
+        self.send_command('battery?')
+        return self.last_battery
 
     def land(self):
-        return self.send_command('land')
+        self.send_command('land')
+        return
 
     def move(self, direction, distance):
-        return self.send_command('%s %s' % (direction, distance))
+        self.send_command('%s %s' % (direction, distance))
+        return
 
     def move_backward(self, distance):
-        return self.move('back', distance)
+        self.move('back', distance)
+        return
 
     def move_down(self, distance):
-        return self.move('down', distance)
+        self.move('down', distance)
+        return
 
     def move_forward(self, distance):
-        return self.move('forward', distance)
+        self.move('forward', distance)
+        return
 
     def move_left(self, distance):
-        return self.move('left', distance)
+        self.move('left', distance)
+        return
 
     def move_right(self, distance):
-        return self.move('right', distance)
+        self.move('right', distance)
+        return
 
     def move_up(self, distance):
-        return self.move('up', distance)
+        self.move('up', distance)
+        return
 
     def req_iframe(self):
-        return self.send_command('iframe')
+        self.send_command('iframe')
+        return
 
 #eof
 

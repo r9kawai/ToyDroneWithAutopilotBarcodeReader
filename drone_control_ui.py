@@ -129,18 +129,20 @@ class DroneUI:
             if hasattr(self.drone, 'read'):
                 self.frame_lock.acquire()
                 try:
-                    self.frame = self.drone.read()
+                    self.frame = self.drone.read_video_frame()
                 except:
                     print('Err : caught a RuntimeError')
                 self.frame_lock.release()
             time.sleep(0.011)
+        
+        return
 
     def _getGUIImage(self):
         while not self.get_GUI_Image_thread_stop.is_set():
-            if hasattr(self.drone.read, 'read'):
+            if hasattr(self.drone, 'read_video_frame'):
                 self.frame_lock.acquire()
                 try:
-                    self.frame = self.drone.read()
+                    self.frame = self.drone.read_video_frame()
                 except:
                     print('Err : caught a RuntimeError')
                 self.frame_lock.release()
@@ -165,6 +167,8 @@ class DroneUI:
             self.panel.configure(image=self.image)
             self.panel.image = self.image
             time.sleep(0.033)
+        
+        return
 
     def _sendingCommand(self):
         poling_counter = 0
@@ -216,6 +220,8 @@ class DroneUI:
 
             poling_counter += 1
             time.sleep(0.1)
+        
+        return
 
     def droneTakeOff(self):
         takeoff_response = None
@@ -223,16 +229,13 @@ class DroneUI:
         time.sleep(0.2)
         self.drone.takeoff()
         time.sleep(0.2)
-        takeoff_response = self.drone.get_response()
-        if takeoff_response == 'error':
-            print('Err : takeoff')
         self.takeoff = True
         return
 
     def droneLanding(self):
         self.takeoff = False
         self.drone.land()
-        time.sleep(0.1)
+        time.sleep(0.2)
         return
 
     def _autoPilot(self):
@@ -279,46 +282,55 @@ class DroneUI:
         self.distance = 20
         print('Up %d cm' % self.distance)
         self.droneUp(self.distance)
+        return
 
     def on_keypress_s(self, event):
         self.distance = 20
         print('Down %d cm' % self.distance)
         self.droneDown(self.distance)
+        return
 
     def on_keypress_a(self, event):
         self.degree = 10
         print('Rotate left %d degree' % self.degree)
-        self.drone.rotate_ccw(self.degree)
+        self.droneCCW(self.degree)
+        return
 
     def on_keypress_d(self, event):
         self.degree = 10
         print('Rotate right %d m' % self.degree)
-        self.drone.rotate_cw(self.degree)
+        self.droneCW(self.degree)
+        return
 
     def on_keypress_up(self, event):
         self.distance = 20
         print('forward %d cm' % self.distance)
         self.droneMoveForward(self.distance)
+        return
 
     def on_keypress_down(self, event):
         self.distance = 20
         print('backward %d cm' % self.distance)
         self.droneMoveBackward(self.distance)
+        return
 
     def on_keypress_left(self, event):
         self.distance = 20
         print('left %d cm' % self.distance)
         self.droneMoveLeft(self.distance)
+        return
 
     def on_keypress_right(self, event):
         self.distance = 20
         print('right %d cm' % self.distance)
         self.droneMoveRight(self.distance)
+        return
 
     def on_keypress_enter(self, event):
         if self.frame is not None:
             self.registerFace()
         self.tmp_f.focus_set()
+        return
 
     def get_battery(self):
         try:
@@ -330,6 +342,7 @@ class DroneUI:
 
         str_val = 'Battery : ' + str(self.now_battery) + ' [%]'
         self.battery_str.set(str_val)
+        return
 
     def get_height(self):
         try:
@@ -343,6 +356,7 @@ class DroneUI:
 
         str_val = 'Altitude : ' + str(self.now_height) + ' [cm]'
         self.height_str.set(str_val)
+        return
 
     def onClose(self):
         print('closing 1...')
@@ -370,12 +384,14 @@ class DroneUI:
         self.drone.close()
         del self.drone
         self.root.quit()
+        return
 
     def _add_log(self, arg_log):
         now = datetime.datetime.now(pytz.timezone(TIMEZONE))
         nowtimestr = str(now.strftime('%X'))
         logstr = nowtimestr + ' : [' + arg_log + ']\n'
         self.hist_txt.insert(tki.END, logstr)
+        return
 
 #eof
 
