@@ -30,7 +30,7 @@ SUB_MODE_DOWN = 'DOWN'
 SUB_MODE_BACK = 'BACK'
 SUB_MODE_ALT = 'ALT'
 
-ALTITUDE_MAX = 150
+ALTITUDE_MAX = 160
 ALTITUDE_MIN = 50
 MOVE_MIN = 20
 MOVE_MIN_F = 30
@@ -46,7 +46,7 @@ DETECT_CYCLE_TIME_MS = 200
 
 PARAM_A_1 = (float)(185)
 PARAM_A_2 = (float)(5.1)
-PARAM_A_3 = (int)(130)
+PARAM_A_3 = (int)(135)
 
 PARAM_1 = PARAM_A_1
 PARAM_2 = PARAM_A_2
@@ -327,9 +327,13 @@ class Drone_AR_Flight:
                 if self.sub_mode == SUB_MODE_UP:
                     cmd = 'up'
                     val = MOVE_MIN
+#                   self.next_cmd = 'rotateRight'
+#                   self.next_cmd_val = 30
                 elif self.sub_mode == SUB_MODE_DOWN:
                     cmd = 'down'
                     val = MOVE_MIN
+#                   self.next_cmd = 'rotateRight'
+#                   self.next_cmd_val = 30
 
         elif self.mode == MODE_TO_DIR:
             deg = self.marker_degree[self.choise_marker]
@@ -373,7 +377,7 @@ class Drone_AR_Flight:
                 else:
                     self.next_cmd = 'stay'
                     self.next_cmd_val = 0
-            elif distcm < BARREAD_DISTANCE:
+            elif (distcm < BARREAD_DISTANCE) and (distcm > 0):
                 zdeg = self.marker_ztilt[self.choise_marker]
                 if abs(zdeg) > MIN_DEGREE:
                     if zdeg > 0:
@@ -383,8 +387,16 @@ class Drone_AR_Flight:
                         cmd = 'rotateLeft'
                         val = zdeg*(-1)
                 else:
+#                   if abs(abs(dcm_y) - MOVE_MIN) < MOVE_MIN:
+#                       if dcm_y > 0:
+#                           cmd = 'down'
+#                           val = MOVE_MIN
+#                       else:
+#                           cmd = 'up'
+#                           val = MOVE_MIN
                     cmd = 'back'
                     val = MOVE_MIN_B
+
             else:
                 cmd = 'stay'
                 val = 0

@@ -96,21 +96,19 @@ class Tello:
     def _receive_thread(self):
         while self.receive_thread_run == True:
             try:
-                self.buff, ip = self.socket.recvfrom(3000)
+                self.buff, ip = self.socket.recvfrom(2048)
             except socket.error as exc:
                 print ("Caught exception socket.error : %s" % exc)
         
         return
 
     def _status_thread(self):
-        bat_hig = False
+        status_counter = 0
         while self.status_thread_run == True:
-            if bat_hig == True:
+            if (status_counter % 2) == 0:
                 self.send_command('battery?')
-                bat_hig = False
             else:
                 self.send_command('height?')
-                bat_hig = True
         
             self.abort_flag = False
             timer = threading.Timer(STATUS_TIMEOUT, self._set_abort_flag)
@@ -135,7 +133,7 @@ class Tello:
                         val = -1
                     if val >= 0:
                         self.last_height = val
-                        print('< height ', self.last_height)
+                        # print('< height ', self.last_height)
 
                 else:
                     idx_ok = self.response.find('ok')
@@ -148,41 +146,20 @@ class Tello:
                             val = -1
                         if val >= 0:
                             self.last_battery = val
-                            print('< battery ', self.last_battery)
+                            # print('< battery ', self.last_battery)
                 
                 self.buff = None
             
+            if (status_counter % 5) == 0:
+                self.req_iframe()
+
             time.sleep(STATUS_TIMEOUT)
+            status_counter += 1
         
         return
 
     def _set_abort_flag(self):
         self.abort_flag = True
-        return
-
-    def XXX_receive_thread(self):
-        while self.receive_thread_run == True:
-            try:
-                buff, ip = self.socket.recvfrom(3000)
-                if buff != None:
-                    self.response = self.buff.decode('utf-8')
-                    print('< res ', self.response)
-                    try:
-                        val = int(self.response)
-                    except ValueError:
-                        val = -1
-                    
-                    if val > 0:
-                        if self.now_inquiry == 'height':
-                            print('<  res height ', val)
-                            self.last_height = val
-                        elif self.now_inquiry == 'battery':
-                            print('<  res battery ', val)
-                            self.last_battery = val
-                        
-            except socket.error as exc:
-                print ("Caught exception socket.error : %s" % exc)
-
         return
 
     def _receive_video_thread(self):
@@ -218,10 +195,11 @@ class Tello:
         if command == 'iframe':
             s11 = Struct("!11B")
             reqifcmd = s11.pack(*CMD_REQ_IFRAME)
-            print('>> send req iframe')
+#           print('>> send req iframe')
             self.socket.sendto(reqifcmd, self.tello_address)
         else:
-            print (">> send cmd: {}".format(command))
+            if (command.find('battery') < 0) and (command.find('height') < 0):
+                print (">> send cmd: {}".format(command))
             self.socket.sendto(command.encode('utf-8'), self.tello_address)
         return
     

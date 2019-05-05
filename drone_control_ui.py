@@ -172,14 +172,8 @@ class DroneUI:
 
     def _sendingCommand(self):
         poling_counter = 0
-        toggle = 0
         while not self.sending_command_thread_stop.is_set():
-            if poling_counter < 50:
-                poling_counter += 1
-                time.sleep(0.1)
-                continue
-
-            if self.takeoff and (poling_counter != 0) and (poling_counter % 10) == 0 and self.auto_pilot and toggle == 0:
+            if self.takeoff and (poling_counter % 12) == 0 and self.auto_pilot: # and toggle == 0:
                 self.ar_cmd, self.ar_val = self.drone_ar.get_command()
                 if self.ar_cmd== 'up':
                     self.droneUp(self.ar_val)
@@ -206,22 +200,10 @@ class DroneUI:
                 self.barcode_str.set(tmpstr)
                 self._add_log(tmpstr)
 
-            if (poling_counter != 0) and (poling_counter % 50) == 0:
-                if toggle == 1:
-                    self.drone.req_iframe()
-#                elif toggle == 1:
-#                    self.get_height()
-#                elif toggle == 3:
-#                    self.get_battery()
-
-            if (poling_counter % 10) == 0:
-                toggle += 1
-                toggle %= 2
-
             self.get_battery()
             self.get_height()
             poling_counter += 1
-            time.sleep(0.1)
+            time.sleep(0.3)
         
         return
 
