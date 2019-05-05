@@ -129,18 +129,20 @@ class DroneUI:
             if hasattr(self.drone, 'read'):
                 self.frame_lock.acquire()
                 try:
-                    self.frame = self.drone.read()
+                    self.frame = self.drone.read_video_frame()
                 except:
                     print('Err : caught a RuntimeError')
                 self.frame_lock.release()
             time.sleep(0.011)
+        
+        return
 
     def _getGUIImage(self):
         while not self.get_GUI_Image_thread_stop.is_set():
-            if hasattr(self.drone.read, 'read'):
+            if hasattr(self.drone, 'read_video_frame'):
                 self.frame_lock.acquire()
                 try:
-                    self.frame = self.drone.read()
+                    self.frame = self.drone.read_video_frame()
                 except:
                     print('Err : caught a RuntimeError')
                 self.frame_lock.release()
@@ -165,17 +167,13 @@ class DroneUI:
             self.panel.configure(image=self.image)
             self.panel.image = self.image
             time.sleep(0.033)
+        
+        return
 
     def _sendingCommand(self):
         poling_counter = 0
-        toggle = 0
         while not self.sending_command_thread_stop.is_set():
-            if poling_counter < 50:
-                poling_counter += 1
-                time.sleep(0.1)
-                continue
-
-            if self.takeoff and (poling_counter != 0) and (poling_counter % 10) == 0 and self.auto_pilot and toggle == 0:
+            if self.takeoff and (poling_counter % 12) == 0 and self.auto_pilot: # and toggle == 0:
                 self.ar_cmd, self.ar_val = self.drone_ar.get_command()
                 if self.ar_cmd== 'up':
                     self.droneUp(self.ar_val)
@@ -202,20 +200,12 @@ class DroneUI:
                 self.barcode_str.set(tmpstr)
                 self._add_log(tmpstr)
 
-            if (poling_counter != 0) and (poling_counter % 30) == 0:
-                if toggle == 2:
-                    self.drone.req_iframe()
-                elif toggle == 1:
-                    self.get_height()
-                elif toggle == 3:
-                    self.get_battery()
-
-            if (poling_counter % 10) == 0:
-                toggle += 1
-                toggle %= 4
-
+            self.get_battery()
+            self.get_height()
             poling_counter += 1
-            time.sleep(0.1)
+            time.sleep(0.3)
+        
+        return
 
     def droneTakeOff(self):
         takeoff_response = None
@@ -223,16 +213,13 @@ class DroneUI:
         time.sleep(0.2)
         self.drone.takeoff()
         time.sleep(0.2)
-        takeoff_response = self.drone.get_response()
-        if takeoff_response == 'error':
-            print('Err : takeoff')
         self.takeoff = True
         return
 
     def droneLanding(self):
         self.takeoff = False
         self.drone.land()
-        time.sleep(0.1)
+        time.sleep(0.2)
         return
 
     def _autoPilot(self):
@@ -279,63 +266,64 @@ class DroneUI:
         self.distance = 20
         print('Up %d cm' % self.distance)
         self.droneUp(self.distance)
+        return
 
     def on_keypress_s(self, event):
         self.distance = 20
         print('Down %d cm' % self.distance)
         self.droneDown(self.distance)
+        return
 
     def on_keypress_a(self, event):
         self.degree = 10
         print('Rotate left %d degree' % self.degree)
-        self.drone.rotate_ccw(self.degree)
+        self.droneCCW(self.degree)
+        return
 
     def on_keypress_d(self, event):
         self.degree = 10
         print('Rotate right %d m' % self.degree)
-        self.drone.rotate_cw(self.degree)
+        self.droneCW(self.degree)
+        return
 
     def on_keypress_up(self, event):
         self.distance = 20
         print('forward %d cm' % self.distance)
         self.droneMoveForward(self.distance)
+        return
 
     def on_keypress_down(self, event):
         self.distance = 20
         print('backward %d cm' % self.distance)
         self.droneMoveBackward(self.distance)
+        return
 
     def on_keypress_left(self, event):
         self.distance = 20
         print('left %d cm' % self.distance)
         self.droneMoveLeft(self.distance)
+        return
 
     def on_keypress_right(self, event):
         self.distance = 20
         print('right %d cm' % self.distance)
         self.droneMoveRight(self.distance)
+        return
 
     def on_keypress_enter(self, event):
         if self.frame is not None:
             self.registerFace()
         self.tmp_f.focus_set()
+        return
 
     def get_battery(self):
-        try:
-            int_val = int(self.drone.get_battery())
-        except:
-            int_val = self.now_battery
-        if int_val != 0:
-            self.now_battery = int_val
-
+        self.now_battery = int(self.drone.get_battery())
         str_val = 'Battery : ' + str(self.now_battery) + ' [%]'
         self.battery_str.set(str_val)
+        return
 
     def get_height(self):
-        try:
-            int_val = self.drone.get_height()
-        except:
-            int_val = self.now_height
+        int_val = self.drone.get_height()
         if int_val != 0:
             int_val *=10
             if abs(int_val - self.now_height) < 100:
@@ -343,6 +331,7 @@ class DroneUI:
 
         str_val = 'Altitude : ' + str(self.now_height) + ' [cm]'
         self.height_str.set(str_val)
+        return
 
     def onClose(self):
         print('closing 1...')
@@ -370,12 +359,14 @@ class DroneUI:
         self.drone.close()
         del self.drone
         self.root.quit()
+        return
 
     def _add_log(self, arg_log):
         now = datetime.datetime.now(pytz.timezone(TIMEZONE))
         nowtimestr = str(now.strftime('%X'))
         logstr = nowtimestr + ' : [' + arg_log + ']\n'
         self.hist_txt.insert(tki.END, logstr)
+        return
 
 #eof
 
