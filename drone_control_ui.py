@@ -206,18 +206,20 @@ class DroneUI:
                 self.barcode_str.set(tmpstr)
                 self._add_log(tmpstr)
 
-            if (poling_counter != 0) and (poling_counter % 30) == 0:
-                if toggle == 2:
+            if (poling_counter != 0) and (poling_counter % 50) == 0:
+                if toggle == 1:
                     self.drone.req_iframe()
-                elif toggle == 1:
-                    self.get_height()
-                elif toggle == 3:
-                    self.get_battery()
+#                elif toggle == 1:
+#                    self.get_height()
+#                elif toggle == 3:
+#                    self.get_battery()
 
             if (poling_counter % 10) == 0:
                 toggle += 1
-                toggle %= 4
+                toggle %= 2
 
+            self.get_battery()
+            self.get_height()
             poling_counter += 1
             time.sleep(0.1)
         
@@ -333,22 +335,13 @@ class DroneUI:
         return
 
     def get_battery(self):
-        try:
-            int_val = int(self.drone.get_battery())
-        except:
-            int_val = self.now_battery
-        if int_val != 0:
-            self.now_battery = int_val
-
+        self.now_battery = int(self.drone.get_battery())
         str_val = 'Battery : ' + str(self.now_battery) + ' [%]'
         self.battery_str.set(str_val)
         return
 
     def get_height(self):
-        try:
-            int_val = self.drone.get_height()
-        except:
-            int_val = self.now_height
+        int_val = self.drone.get_height()
         if int_val != 0:
             int_val *=10
             if abs(int_val - self.now_height) < 100:

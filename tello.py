@@ -9,12 +9,14 @@ import numpy as np
 import libh264decoder
 
 CMD_REQ_IFRAME =(0xcc, 0x58, 0x00, 0x7c, 0x60, 0x25, 0x00, 0x00, 0x00, 0x6c, 0x95)
+STATUS_TIMEOUT = (float)(0.5)
 
 class Tello:
     def __init__(self, local_ip, local_port, imperial=False, command_timeout=.3, tello_ip='192.168.10.1',
                  tello_port=8889):
         self.decoder = libh264decoder.H264Decoder()
         self.command_timeout = command_timeout
+        self.buff = None
         self.response = None
         self.frame = None  # numpy array BGR -- current camera output frame
         self.is_freeze = False  # freeze current camera output
@@ -25,7 +27,6 @@ class Tello:
         self.local_video_port = 11111  # port for receiving video stream
         self.last_height = 0
         self.last_battery = 0
-        self.now_inquiry = 'non'
         self.socket.bind((local_ip, local_port))
 
         # thread for receiving cmd ack
@@ -33,6 +34,12 @@ class Tello:
         self.receive_thread = threading.Thread(target=self._receive_thread)
         self.receive_thread.daemon = True
         self.receive_thread.start()
+
+        # thread for status
+        self.status_thread_run = True
+        self.status_thread = threading.Thread(target=self._status_thread)
+        self.status_thread.daemon = True
+        self.status_thread.start()
 
         # to receive video -- send cmd: command, streamon
         self.socket.sendto(b'command', self.tello_address)
@@ -67,6 +74,10 @@ class Tello:
         self.receive_thread_run = False
         self.receive_thread.join()
 
+        print('Tello.close 3.1')
+        self.status_thread_run = False
+        self.status_thread.join()
+
         print('Tello.close 4')
         self.receive_video_thread_run = False
         self.receive_video_thread.join()
@@ -85,6 +96,73 @@ class Tello:
     def _receive_thread(self):
         while self.receive_thread_run == True:
             try:
+                self.buff, ip = self.socket.recvfrom(3000)
+            except socket.error as exc:
+                print ("Caught exception socket.error : %s" % exc)
+        
+        return
+
+    def _status_thread(self):
+        bat_hig = False
+        while self.status_thread_run == True:
+            if bat_hig == True:
+                self.send_command('battery?')
+                bat_hig = False
+            else:
+                self.send_command('height?')
+                bat_hig = True
+        
+            self.abort_flag = False
+            timer = threading.Timer(STATUS_TIMEOUT, self._set_abort_flag)
+            timer.start()
+            while self.buff is None:
+                if self.abort_flag is True:
+                    break
+            timer.cancel()
+            if self.buff is None:
+                pass
+            else:
+                try:
+                    self.response = self.buff.decode('utf-8')
+                except:
+                    self.response = ' '
+                idx_dm = self.response.find('dm')
+                if idx_dm >= 0:
+                    dmdigi = self.response[0:idx_dm]
+                    try:
+                        val = int(dmdigi)
+                    except ValueError:
+                        val = -1
+                    if val >= 0:
+                        self.last_height = val
+                        print('< height ', self.last_height)
+
+                else:
+                    idx_ok = self.response.find('ok')
+                    if idx_ok >= 0:
+                        pass
+                    else:
+                        try:
+                            val = int(self.response)
+                        except ValueError:
+                            val = -1
+                        if val >= 0:
+                            self.last_battery = val
+                            print('< battery ', self.last_battery)
+                
+                self.buff = None
+            
+            time.sleep(STATUS_TIMEOUT)
+        
+        return
+
+    def _set_abort_flag(self):
+        self.abort_flag = True
+        return
+
+    def XXX_receive_thread(self):
+        while self.receive_thread_run == True:
+            try:
                 buff, ip = self.socket.recvfrom(3000)
                 if buff != None:
                     self.response = self.buff.decode('utf-8')
@@ -92,7 +170,7 @@ class Tello:
                     try:
                         val = int(self.response)
                     except ValueError:
-                        val = -1:
+                        val = -1
                     
                     if val > 0:
                         if self.now_inquiry == 'height':
@@ -164,13 +242,11 @@ class Tello:
         return
 
     def get_height(self):
-        self.now_inquiry = 'height'
-        self.send_command('height?')
+#       self.send_command('height?')
         return self.last_height
 
     def get_battery(self):
-        self.now_inquiry = 'battery'
-        self.send_command('battery?')
+#       self.send_command('battery?')
         return self.last_battery
 
     def land(self):
