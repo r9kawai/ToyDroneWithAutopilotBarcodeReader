@@ -3,8 +3,8 @@
 Task of barcode read automatically at flight. Anyone can experiment it with toy drone of "Tello - Ryze Tech" and Ubuntu on PC.
 It use image processing of AR marker, camera process recognize position. Please replay below movie!
 
-## The Movie is Under construction...
-[![](https://img.youtube.com/vi/cq8WWsSY9-k/0.jpg)](https://www.youtube.com/watch?v=cq8WWsSY9-k)
+## Click below video.
+[![](https://img.youtube.com/vi/t5xWGEUsbTc/0.jpg)](https://www.youtube.com/watch?v=t5xWGEUsbTc)
 
 <img width="670" alt="github_ToyDroneWithAutopilotBarcodeReader" src="https://user-images.githubusercontent.com/47957215/56717350-697bc900-6777-11e9-8662-0a040f9596e9.png">
 
