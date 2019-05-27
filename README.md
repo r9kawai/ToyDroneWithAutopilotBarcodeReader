@@ -6,6 +6,10 @@ It use image processing of AR marker, camera process recognize position. Please 
 ## Click below video.
 [![](https://img.youtube.com/vi/t5xWGEUsbTc/0.jpg)](https://www.youtube.com/watch?v=t5xWGEUsbTc)
 
+## System layer
+<img width="670" alt="github_ToyDroneWithAutopilotBarcodeReader_Systemlayer.png" src="https://github.com/r9kawai/ToyDroneWithAutopilotBarcodeReader/blob/master/github_ToyDroneWithAutopilotBarcodeReader_Systemlayer.png">
+
+## Future image
 <img width="670" alt="github_ToyDroneWithAutopilotBarcodeReader" src="https://user-images.githubusercontent.com/47957215/56717350-697bc900-6777-11e9-8662-0a040f9596e9.png">
 
 ## What you need to play.
