@@ -10,6 +10,7 @@ import libh264decoder
 
 CMD_REQ_IFRAME =(0xcc, 0x58, 0x00, 0x7c, 0x60, 0x25, 0x00, 0x00, 0x00, 0x6c, 0x95)
 STATUS_TIMEOUT = (float)(0.5)
+BIT_RC_COMMAND_TIME = (float)(0.3)
 
 class Tello:
     def __init__(self, local_ip, local_port, imperial=False, command_timeout=.3, tello_ip='192.168.10.1',
@@ -257,6 +258,42 @@ class Tello:
 
     def move_up(self, distance):
         self.move('up', distance)
+        return
+
+    def move_left_bit(self):
+        self.send_command('rc -30 0 0 0')
+        time.sleep(BIT_RC_COMMAND_TIME)
+        self.send_command('rc 0 0 0 0')
+        return
+
+    def move_right_bit(self):
+        self.send_command('rc 30 0 0 0')
+        time.sleep(BIT_RC_COMMAND_TIME)
+        self.send_command('rc 0 0 0 0')
+        return
+
+    def move_forward_bit(self):
+        self.send_command('rc 0 30 0 0')
+        time.sleep(BIT_RC_COMMAND_TIME)
+        self.send_command('rc 0 0 0 0')
+        return
+
+    def move_backward_bit(self):
+        self.send_command('rc 0 -30 0 0')
+        time.sleep(BIT_RC_COMMAND_TIME)
+        self.send_command('rc 0 0 0 0')
+        return
+
+    def move_up_bit(self):
+        self.send_command('rc 0 0 30 0')
+        time.sleep(BIT_RC_COMMAND_TIME)
+        self.send_command('rc 0 0 0 0')
+        return
+
+    def move_down_bit(self):
+        self.send_command('rc 0 0 -30 0')
+        time.sleep(BIT_RC_COMMAND_TIME)
+        self.send_command('rc 0 0 0 0')
         return
 
     def req_iframe(self):

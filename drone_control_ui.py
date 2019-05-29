@@ -50,7 +50,8 @@ class DroneUI:
                           'W - Up\t\tArrow U - Forward\n'
                           'S - Down\t\tArrow D - Backward\n'
                           'A - Rotate Left\tArrow L - Left\n'
-                          'D - Rotate Right\tArrow R - Right\n',
+                          'D - Rotate Right\tArrow R - Right\n'
+                          '(J/L I/K U/H bit move)\n',
                           justify="left")
         self.text1.pack(side="top")
 
@@ -97,6 +98,14 @@ class DroneUI:
         self.tmp_f.bind('<KeyPress-Down>', self.on_keypress_down)
         self.tmp_f.bind('<KeyPress-Left>', self.on_keypress_left)
         self.tmp_f.bind('<KeyPress-Right>', self.on_keypress_right)
+
+        self.tmp_f.bind('<KeyPress-j>', self.on_keypress_j)
+        self.tmp_f.bind('<KeyPress-l>', self.on_keypress_l)
+        self.tmp_f.bind('<KeyPress-i>', self.on_keypress_i)
+        self.tmp_f.bind('<KeyPress-k>', self.on_keypress_k)
+        self.tmp_f.bind('<KeyPress-u>', self.on_keypress_u)
+        self.tmp_f.bind('<KeyPress-h>', self.on_keypress_h)
+
         self.tmp_f.pack(side="bottom")
         self.tmp_f.focus_set()
 
@@ -191,6 +200,18 @@ class DroneUI:
                     self.droneCCW(self.ar_val)
                 elif self.ar_cmd == 'rotateRight':
                     self.droneCW(self.ar_val)
+                elif self.ar_cmd == 'bit left':
+                    self.drone.move_left_bit()
+                elif self.ar_cmd == 'bit right':
+                    self.drone.move_right_bit()
+                elif self.ar_cmd == 'bit forward':
+                    self.drone.move_forward_bit()
+                elif self.ar_cmd == 'bit backward':
+                    self.drone.move_backward_bit()
+                elif self.ar_cmd == 'bit up':
+                    self.drone.move_up_bit()
+                elif self.ar_cmd == 'bit down':
+                    self.drone.move_down_bit()
                 elif self.ar_cmd == 'stay':
                     print('>> stay')
                
@@ -366,6 +387,36 @@ class DroneUI:
         nowtimestr = str(now.strftime('%X'))
         logstr = nowtimestr + ' : [' + arg_log + ']\n'
         self.hist_txt.insert(tki.END, logstr)
+        return
+
+    def on_keypress_j(self, event):
+        print('bit Left')
+        self.drone.move_left_bit()
+        return
+
+    def on_keypress_l(self, event):
+        print('bit Right')
+        self.drone.move_right_bit()
+        return
+
+    def on_keypress_u(self, event):
+        print('bit Up')
+        self.drone.move_up_bit()
+        return
+
+    def on_keypress_h(self, event):
+        print('bit Down')
+        self.drone.move_down_bit()
+        return
+
+    def on_keypress_i(self, event):
+        print('bit Forward')
+        self.drone.move_forward_bit()
+        return
+
+    def on_keypress_k(self, event):
+        print('bit Backward')
+        self.drone.move_backward_bit()
         return
 
 #eof

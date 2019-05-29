@@ -33,6 +33,7 @@ SUB_MODE_ALT = 'ALT'
 ALTITUDE_MAX = 160
 ALTITUDE_MIN = 50
 MOVE_MIN = 20
+MOVE_BIT_MIN = 10
 MOVE_MIN_F = 30
 MOVE_MIN_B = 20
 MOVE_MAX = 80
@@ -387,15 +388,32 @@ class Drone_AR_Flight:
                         cmd = 'rotateLeft'
                         val = zdeg*(-1)
                 else:
-#                   if abs(abs(dcm_y) - MOVE_MIN) < MOVE_MIN:
-#                       if dcm_y > 0:
-#                           cmd = 'down'
-#                           val = MOVE_MIN
-#                       else:
-#                           cmd = 'up'
-#                           val = MOVE_MIN
                     cmd = 'back'
                     val = MOVE_MIN_B
+
+#                    mbitdiff = max(abs(dcm_y), abs(dcm_x), abs(distcm - BARREAD_DISTANCE))
+#                    if mbitdiff > MOVE_BIT_MIN:
+#                        if mbitdiff == abs(dcm_y):
+#                            if dcm_y > 0:
+#                                cmd = 'bit down'
+#                                val = 0
+#                            else:
+#                                cmd = 'bit up'
+#                                val = 0
+#                        elif mbitdiff == abs(dcm_x):
+#                            if dcm_x > 0:
+#                                cmd = 'bit right'
+#                                val = 0
+#                            else:
+#                                cmd = 'bit left'
+#                                val = 0
+#                        elif mbitdiff == abs(distcm - BARREAD_DISTANCE):
+#                            if (distcm - BARREAD_DISTANCE) > 0:
+#                                cmd = 'bit forward'
+#                                val = 0
+#                            else:
+#                                cmd = 'bit backward'
+#                                val = 0
 
             else:
                 cmd = 'stay'
