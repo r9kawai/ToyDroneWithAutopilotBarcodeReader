@@ -366,6 +366,12 @@ class DroneUI:
         nowtimestr = str(now.strftime('%X'))
         logstr = nowtimestr + ' : [' + arg_log + ']\n'
         self.hist_txt.insert(tki.END, logstr)
+        
+        f = open('detect_ar.csv','a')
+        writeline = nowtimestr + ',' + arg_log + ',\n'
+        f.write(writeline)
+        f.close()
+
         return
 
 #eof

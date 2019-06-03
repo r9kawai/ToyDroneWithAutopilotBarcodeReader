@@ -15,6 +15,7 @@ import datetime
 import math
 import numpy as np
 import cv2
+from drone_ar_assignment import Drone_AR_assignment
 from PIL import Image, ImageFont, ImageDraw
 from pyzbar.pyzbar import decode
 from beep import Beep
@@ -64,6 +65,8 @@ COLOR_WHITE = (255,255,255)
 
 class Drone_AR_Flight:
     def __init__(self):
+        self.ar_as = Drone_AR_assignment()
+    
         self.mode = MODE_SEARCH_UD
         self.sub_mode = SUB_MODE_UP
         self.now_height_cm = int(0)
@@ -129,6 +132,7 @@ class Drone_AR_Flight:
             if self.marker_id[i] == True:
                 points = self.marker_pointss[i]
                 if self.marker_enable[i] == True:
+                    self.alt_ar_to_img(self.frame, points, i)
                     cv2.polylines(self.frame, [points], True, (255,255,0), 2)
                 else:
                     cv2.polylines(self.frame, [points], True, (0,255,0), 1)
@@ -279,7 +283,8 @@ class Drone_AR_Flight:
         if self.marker_enable[self.choise_marker] == True:
             if self.marker_distances[self.choise_marker] < BARREAD_DISTANCE:
                 if self.code_flag == False:
-                    self._try_read_barcode()
+#                   self._try_read_barcode()
+                    self.log_ar_code(self.choise_marker)
         return
 
     def _try_read_barcode(self):
@@ -450,6 +455,23 @@ class Drone_AR_Flight:
         self.marker_ztilt = [int(0), int(0), int(0), int(0)]
         self.code_flag = False
         self.chase_marker = int(-1)
+        return
+
+    def alt_ar_to_img(self, frame, points, i):
+        iconimg = self.ar_as.ar_to_img(i)
+        h, w = iconimg.shape[:2]
+        x = points[0][0]
+        y = points[0][1]
+        frame[0:h, 0:w] = iconimg
+        return
+
+    def log_ar_code(self, arcode):
+        decoded = self.ar_as.ar_to_name(arcode)
+        self.code_latest = decoded
+        self.beep.on()
+        self.code_latest_view = 60
+        self.code_flag = True
+        print('found code:', self.code_latest)
         return
 
 #eof
