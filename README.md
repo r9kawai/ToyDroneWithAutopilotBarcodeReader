@@ -62,5 +62,7 @@ click "Auto".
 
 ## Thanks
 Thank you for the Tello development community.
+In this space, Doing active development.
+https://tellopilots.com/forums/tello-development.8/
 
 ## eof
