@@ -1,4 +1,11 @@
 # Toy drone with autopilot barcode reader
+
+## Appendix
+I confirmed that a software normary move on Ubuntu 19.10 on Oracle VirtualBox VM.
+but, You should care network probrem about Python to Tello connection.
+If you see a blackscreen on this applications camera moniter and can control Tello, You should try change setup VirtualBox network tab.
+It change to type of "NAT" to "Bridge", then has possibile success a camera moniter.
+
 ## Introduction.
 Task of barcode read automatically at flight. Anyone can experiment it with toy drone of "Tello - Ryze Tech" and Ubuntu on PC.
 It use image processing of AR marker, camera process recognize position. Please replay below movie!
