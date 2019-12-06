@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+/TelloWinAR/.vs/TelloWinAR/v16
+/TelloWinAR/H264decWrapper/video_rcv.bin
+/TelloWinAR/H264decWrapper/H264decWrapper.vcxproj.filters
+/TelloWinAR/H264decWrapper/H264decWrapper.vcxproj.user
+/TelloWinAR/H264decWrapper/x64
