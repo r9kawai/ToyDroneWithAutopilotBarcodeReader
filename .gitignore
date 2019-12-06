@@ -107,3 +107,8 @@ venv.bak/
 /TelloWinAR/H264decWrapper/H264decWrapper.vcxproj.filters
 /TelloWinAR/H264decWrapper/H264decWrapper.vcxproj.user
 /TelloWinAR/H264decWrapper/x64
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+/.vs/ToyDroneWithAutopilotBarcodeReader/v16/Browse.VC.db
+/.vs/ToyDroneWithAutopilotBarcodeReader/v16/.suo
