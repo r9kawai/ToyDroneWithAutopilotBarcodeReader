@@ -9,7 +9,7 @@
 #include <opencv2/highgui.hpp>
 #include "H264decWrapper.h"
 
-int main(int argc, char* argv[])
+int _main_disable_(int argc, char* argv[])
 {
 	std::cout << "H264decWrapper_test.cpp main()" << std::endl;
 	std::cout << "Boost version:" << BOOST_LIB_VERSION << std::endl;

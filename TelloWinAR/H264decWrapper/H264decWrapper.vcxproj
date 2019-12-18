@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ffmpeg_test.cpp" />
     <ClCompile Include="H264decWrapper.cpp" />
     <ClCompile Include="H264decWrapper_test.cpp" />
   </ItemGroup>

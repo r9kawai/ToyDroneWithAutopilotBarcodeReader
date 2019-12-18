@@ -112,3 +112,5 @@ venv.bak/
 /.vs/ProjectSettings.json
 /.vs/ToyDroneWithAutopilotBarcodeReader/v16/Browse.VC.db
 /.vs/ToyDroneWithAutopilotBarcodeReader/v16/.suo
+/TelloWinAR/x64/Debug
+/TelloWinAR/x64/Release
